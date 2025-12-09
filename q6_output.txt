@@ -1,0 +1,43 @@
+============================================================
+HW5 Problem 6 Complete Solution
+============================================================
+
+[1. Discretization Matrices]
+A =
+[[1. 1.]
+ [0. 1.]]
+B =
+[[0.5]
+ [1. ]]
+
+[2a. Controllability and Minimum Energy Open-Loop Control]
+Controllability rank = 2
+Final state x50 = [ 2.00000000e+00 -2.08166817e-17]
+First 3 controls u0,u1,u2 = [0.00470588 0.00451381 0.00432173]
+
+[2b. Closed-Loop Pole Placement (0.5, 0.5)]
+K (Ackermann) = [[0.25  0.875]]
+First 5 states:
+[[  0.        0.     ]
+ [ -0.375    -0.75   ]
+ [ -1.875    -2.25   ]
+ [ -5.71875  -5.4375 ]
+ [-14.625   -12.375  ]]
+
+[2c. Open-Loop vs Closed-Loop Comparison (No Noise)]
+Computation completed, see plots below
+
+[2d. Robustness Comparison with Noise]
+Computation completed, see plots below
+
+[3. LQR Control (Three Q,R Cases)]
+Q=I, R=1 -> K = [[0.43448324 1.02846593]]
+Q=100I, R=1 -> K = [[0.6608532  1.32605933]]
+Q=I, R=0.1 -> K = [[0.61669526 1.27031633]]
+
+============================================================
+All computations completed, generating HTML report...
+============================================================
+
+✅ Complete report generated: q6_complete_report.html
+   Open in browser to view all results and plots!
