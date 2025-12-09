@@ -1,7 +1,7 @@
 """
-Q6-2d 有噪声的鲁棒性对比：开环最小能量 vs 闭环极点配置
-绘图改用 plotly，避免 matplotlib 与 numpy 二进制不兼容。
-运行后生成 q6_2d_noise_height.html。
+Q6-2d Robustness Comparison with Noise: Open-Loop Minimum Energy vs Closed-Loop Pole Placement
+Uses plotly for plotting to avoid matplotlib and numpy binary incompatibility.
+Generates q6_2d_noise_height.html after running.
 """
 
 import numpy as np
@@ -15,8 +15,8 @@ A = np.array([[1.0, 1.0],
 B = np.array([[0.5],
               [1.0]])
 x0 = np.array([0.0, 0.0])
-xf = np.array([2.0, 0.0])  # 开环目标
-xd = np.array([3.0, 0.0])  # 闭环悬停
+xf = np.array([2.0, 0.0])  # Open-loop target
+xd = np.array([3.0, 0.0])  # Closed-loop hover
 N = 50
 
 
@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
     t = np.arange(N + 1)
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=t, y=x_open_n[:, 0], mode="lines", name="开环高度(噪声)"))
-    fig.add_trace(go.Scatter(x=t, y=x_cl_n[:, 0], mode="lines", name="闭环高度(噪声)"))
-    fig.add_hline(y=xd[0], line=dict(dash="dash", color="black"), annotation_text="期望高度")
-    fig.update_layout(title="噪声下高度对比", xaxis_title="k", yaxis_title="z")
+    fig.add_trace(go.Scatter(x=t, y=x_open_n[:, 0], mode="lines", name="Open-loop Height (Noise)"))
+    fig.add_trace(go.Scatter(x=t, y=x_cl_n[:, 0], mode="lines", name="Closed-loop Height (Noise)"))
+    fig.add_hline(y=xd[0], line=dict(dash="dash", color="black"), annotation_text="Desired Height")
+    fig.update_layout(title="Height Comparison Under Noise", xaxis_title="k", yaxis_title="z")
     fig.write_html("q6_2d_noise_height.html", include_plotlyjs="cdn")
-    print("已生成 q6_2d_noise_height.html，可用浏览器打开查看。")
+    print("Generated q6_2d_noise_height.html, open in browser to view.")
 

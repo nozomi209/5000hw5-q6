@@ -1,5 +1,5 @@
 """
-Q6-2a 可控性检查与最小能量开环控制 (x50 = [2, 0]^T)
+Q6-2a Controllability Check and Minimum Energy Open-Loop Control (x50 = [2, 0]^T)
 """
 
 import numpy as np
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     u_seq = min_energy_sequence(A, B, xf, N)
     xs, us = simulate_open(A, B, u_seq, x0)
 
-    print("可控性秩 =", rank_ctrb)
-    print("终态 x50 =", xs[-1])
-    print("前 3 个控制 u0,u1,u2 =", us[:3])
+    print("Controllability rank =", rank_ctrb)
+    print("Final state x50 =", xs[-1])
+    print("First 3 controls u0,u1,u2 =", us[:3])
 

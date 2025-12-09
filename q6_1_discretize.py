@@ -1,6 +1,6 @@
 """
-Q6-1 离散化检验与数值矩阵 A, B
-模型：Ts=1, m=1, g=10, F=mg+m*u_k => x_{k+1} = A x_k + B u_k
+Q6-1 Discretization Verification and Numerical Matrices A, B
+Model: Ts=1, m=1, g=10, F=mg+m*u_k => x_{k+1} = A x_k + B u_k
 """
 
 import numpy as np

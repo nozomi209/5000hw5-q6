@@ -1,6 +1,6 @@
 """
-Q6-2b 闭环极点配置 (重复极点 0.5, 0.5)
-使用单输入 Ackermann 公式以允许重复极点。
+Q6-2b Closed-Loop Pole Placement (Repeated Poles 0.5, 0.5)
+Uses single-input Ackermann formula to allow repeated poles.
 """
 
 import numpy as np
@@ -22,7 +22,7 @@ def controllability(A, B):
 def ackermann_gain(A, B, desired_poles):
     ctrb = controllability(A, B)
     if np.linalg.matrix_rank(ctrb) < A.shape[0]:
-        raise ValueError("系统不可控，无法极点配置")
+        raise ValueError("System is not controllable, cannot place poles")
     poly = np.poly(desired_poles)  # lambda^n + a1 lambda^{n-1}+...
     phiA = sum(poly[i] * np.linalg.matrix_power(A, A.shape[0] - i) for i in range(len(poly)))
     e_nT = np.zeros((1, A.shape[0]))
@@ -46,5 +46,5 @@ if __name__ == "__main__":
     xs, us = simulate_cl(A, B, K, x0, xd, steps=N)
 
     print("K (Ackermann, poles=0.5,0.5) =", K)
-    print("前 5 步状态:\n", xs[:5])
+    print("First 5 states:\n", xs[:5])
 

@@ -1,7 +1,7 @@
 """
-Q6-3 LQR 三组 (Q,R) 仿真与控制增益
-绘图改用 plotly，避免 matplotlib 与 numpy 二进制不兼容。
-生成 q6_3_lqr_height.html 与 q6_3_lqr_input.html。
+Q6-3 LQR Three Cases of (Q,R) Simulation and Control Gains
+Uses plotly for plotting to avoid matplotlib and numpy binary incompatibility.
+Generates q6_3_lqr_height.html and q6_3_lqr_input.html.
 """
 
 import numpy as np
@@ -41,20 +41,20 @@ if __name__ == "__main__":
 
     t = np.arange(N + 1)
 
-    # 高度曲线
+    # Height curves
     fig_h = go.Figure()
     for name, x_lqr, _, _ in results:
-        fig_h.add_trace(go.Scatter(x=t, y=x_lqr[:, 0], mode="lines", name=f"{name} 高度"))
-    fig_h.add_hline(y=xd[0], line=dict(dash="dash", color="black"), annotation_text="期望高度")
-    fig_h.update_layout(title="LQR 高度", xaxis_title="k", yaxis_title="z")
+        fig_h.add_trace(go.Scatter(x=t, y=x_lqr[:, 0], mode="lines", name=f"{name} Height"))
+    fig_h.add_hline(y=xd[0], line=dict(dash="dash", color="black"), annotation_text="Desired Height")
+    fig_h.update_layout(title="LQR Height", xaxis_title="k", yaxis_title="z")
 
-    # 控制输入
+    # Control input
     fig_u = go.Figure()
     for name, _, u_lqr, _ in results:
         fig_u.add_trace(go.Scatter(x=np.arange(N), y=u_lqr, mode="lines", name=f"{name} u"))
-    fig_u.update_layout(title="LQR 控制输入", xaxis_title="k", yaxis_title="u")
+    fig_u.update_layout(title="LQR Control Input", xaxis_title="k", yaxis_title="u")
 
     fig_h.write_html("q6_3_lqr_height.html", include_plotlyjs="cdn")
     fig_u.write_html("q6_3_lqr_input.html", include_plotlyjs="cdn")
-    print("已生成 q6_3_lqr_height.html 与 q6_3_lqr_input.html，可用浏览器查看。")
+    print("Generated q6_3_lqr_height.html and q6_3_lqr_input.html, open in browser to view.")
 

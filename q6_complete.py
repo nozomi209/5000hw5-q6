@@ -262,7 +262,7 @@ for i in range(1, 5):
             else:
                 fig.update_yaxes(title_text="States (z, ż)", row=i, col=j)
 
-# 生成HTML内容
+# Generate HTML content
 plotly_html = fig.to_html(include_plotlyjs='cdn', div_id='plotly-div')
 
 html_content = f"""
