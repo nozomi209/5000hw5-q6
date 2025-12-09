@@ -1,6 +1,3 @@
-"""
-Q6-2a Controllability Check and Minimum Energy Open-Loop Control (x50 = [2, 0]^T)
-"""
 
 import numpy as np
 

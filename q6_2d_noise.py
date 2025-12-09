@@ -1,9 +1,3 @@
-"""
-Q6-2d Robustness Comparison with Noise: Open-Loop Minimum Energy vs Closed-Loop Pole Placement
-Uses plotly for plotting to avoid matplotlib and numpy binary incompatibility.
-Generates q6_2d_noise_height.html after running.
-"""
-
 import numpy as np
 import plotly.graph_objs as go
 
@@ -18,7 +12,6 @@ x0 = np.array([0.0, 0.0])
 xf = np.array([2.0, 0.0])  # Open-loop target
 xd = np.array([3.0, 0.0])  # Closed-loop hover
 N = 50
-
 
 def simulate_noise(A, B, K=None, u_seq=None, x_ref=None, steps=50, seed=0):
     rng = np.random.default_rng(seed)
@@ -35,8 +28,6 @@ def simulate_noise(A, B, K=None, u_seq=None, x_ref=None, steps=50, seed=0):
         x_next = A @ x + B.flatten() * u + np.array([0.0, 0.02]) * w
         xs.append(x_next)
     return np.array(xs), np.array(us)
-
-
 if __name__ == "__main__":
     u_seq = min_energy_sequence(A, B, xf, N).flatten()
     x_open_n, _ = simulate_noise(A, B, u_seq=u_seq, steps=N, seed=42)
@@ -52,4 +43,7 @@ if __name__ == "__main__":
     fig.update_layout(title="Height Comparison Under Noise", xaxis_title="k", yaxis_title="z")
     fig.write_html("q6_2d_noise_height.html", include_plotlyjs="cdn")
     print("Generated q6_2d_noise_height.html, open in browser to view.")
+
+
+    
 

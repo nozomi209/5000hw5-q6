@@ -1,8 +1,3 @@
-"""
-Q6-2c Open-Loop (Minimum Energy) vs Closed-Loop (Pole Placement) Simulation Comparison (No Noise)
-Uses plotly for plotting to avoid matplotlib and numpy binary incompatibility.
-Generates q6_2c_compare.html after running, viewable in browser.
-"""
 
 import numpy as np
 import plotly.graph_objs as go
@@ -48,4 +43,6 @@ if __name__ == "__main__":
     fig2.write_html("q6_2c_compare_input.html", include_plotlyjs="cdn")
 
     print("Generated q6_2c_compare_height.html and q6_2c_compare_input.html, open in browser to view.")
+
+
 

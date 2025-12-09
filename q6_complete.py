@@ -1,8 +1,3 @@
-"""
-HW5 Problem 6 Complete Solution - All subproblems combined
-Generate a single HTML file containing all results and plots
-"""
-
 import numpy as np
 import plotly.graph_objs as go
 from scipy.linalg import solve_discrete_are

@@ -1,8 +1,3 @@
-"""
-Q6-2b Closed-Loop Pole Placement (Repeated Poles 0.5, 0.5)
-Uses single-input Ackermann formula to allow repeated poles.
-"""
-
 import numpy as np
 
 A = np.array([[1.0, 1.0],
@@ -23,7 +18,7 @@ def ackermann_gain(A, B, desired_poles):
     ctrb = controllability(A, B)
     if np.linalg.matrix_rank(ctrb) < A.shape[0]:
         raise ValueError("System is not controllable, cannot place poles")
-    poly = np.poly(desired_poles)  # lambda^n + a1 lambda^{n-1}+...
+    poly = np.poly(desired_poles)  
     phiA = sum(poly[i] * np.linalg.matrix_power(A, A.shape[0] - i) for i in range(len(poly)))
     e_nT = np.zeros((1, A.shape[0]))
     e_nT[0, -1] = 1.0
@@ -47,4 +42,6 @@ if __name__ == "__main__":
 
     print("K (Ackermann, poles=0.5,0.5) =", K)
     print("First 5 states:\n", xs[:5])
+
+
 

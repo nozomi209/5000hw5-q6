@@ -1,9 +1,3 @@
-"""
-Q6-3 LQR Three Cases of (Q,R) Simulation and Control Gains
-Uses plotly for plotting to avoid matplotlib and numpy binary incompatibility.
-Generates q6_3_lqr_height.html and q6_3_lqr_input.html.
-"""
-
 import numpy as np
 import plotly.graph_objs as go
 from scipy.linalg import solve_discrete_are
@@ -57,4 +51,7 @@ if __name__ == "__main__":
     fig_h.write_html("q6_3_lqr_height.html", include_plotlyjs="cdn")
     fig_u.write_html("q6_3_lqr_input.html", include_plotlyjs="cdn")
     print("Generated q6_3_lqr_height.html and q6_3_lqr_input.html, open in browser to view.")
+
+
+
 
