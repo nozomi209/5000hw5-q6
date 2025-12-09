@@ -42,6 +42,13 @@ if __name__ == "__main__":
     fig_h.add_hline(y=xd[0], line=dict(dash="dash", color="black"), annotation_text="Desired Height")
     fig_h.update_layout(title="LQR Height", xaxis_title="k", yaxis_title="z")
 
+    # Velocity curves
+    fig_v = go.Figure()
+    for name, x_lqr, _, _ in results:
+        fig_v.add_trace(go.Scatter(x=t, y=x_lqr[:, 1], mode="lines", name=f"{name} Velocity"))
+    fig_v.add_hline(y=xd[1], line=dict(dash="dash", color="black"), annotation_text="Desired Velocity")
+    fig_v.update_layout(title="LQR Velocity", xaxis_title="k", yaxis_title="dz/dt")
+
     # Control input
     fig_u = go.Figure()
     for name, _, u_lqr, _ in results:
@@ -49,8 +56,10 @@ if __name__ == "__main__":
     fig_u.update_layout(title="LQR Control Input", xaxis_title="k", yaxis_title="u")
 
     fig_h.write_html("q6_3_lqr_height.html", include_plotlyjs="cdn")
+    fig_v.write_html("q6_3_lqr_velocity.html", include_plotlyjs="cdn")
     fig_u.write_html("q6_3_lqr_input.html", include_plotlyjs="cdn")
-    print("Generated q6_3_lqr_height.html and q6_3_lqr_input.html, open in browser to view.")
+    print("Generated q6_3_lqr_height.html, q6_3_lqr_velocity.html, and q6_3_lqr_input.html")
+    print("Open in browser to view.")
 
 
 
