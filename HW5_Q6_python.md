@@ -1,16 +1,16 @@
-# HW5 第 6 题（UAV 纵向高度控制）Python 解答文档
+# HW5 Problem 6 (UAV Vertical Height Control) Python Solution Documentation
 
-> 依题意：Ts=1，m=1，g=10，输入 F = mg + m·u_k，离散模型  
-> \(x_{k+1} = A x_k + B u_k,\; x = [z,\ \dot z]^T\)，初始 \(x_0 = [0,0]^T\)。
-> 矩阵  
+> According to the problem: Ts=1, m=1, g=10, input F = mg + m·u_k, discrete model  
+> \(x_{k+1} = A x_k + B u_k,\; x = [z,\ \dot z]^T\), initial \(x_0 = [0,0]^T\).  
+> Matrices  
 > \(A = \begin{bmatrix}1 & 1\\ 0 & 1\end{bmatrix},\;
-> B = \begin{bmatrix}0.5\\ 1\end{bmatrix}\)。
+> B = \begin{bmatrix}0.5\\ 1\end{bmatrix}\).
 
-依次给出各小问的 Python 代码与说明（依赖 `numpy scipy matplotlib`）。
+Python code and explanations for each subproblem (requires `numpy scipy matplotlib`).
 
 ---
 
-## 公共代码（导入与模型）
+## Common Code (Imports and Model)
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +26,7 @@ x0 = np.array([0., 0.])
 
 ---
 
-## 1) 离散化检验与数值 A, B
+## 1) Discretization Verification and Numerical A, B
 ```python
 print("A=\n", A)
 print("B=\n", B)
@@ -34,16 +34,16 @@ print("B=\n", B)
 
 ---
 
-## 2a) 可控性与最小能量开环（到 \(x_{50} = [2,0]^T\)）
+## 2a) Controllability and Minimum Energy Open-Loop (to \(x_{50} = [2,0]^T\))
 ```python
 N = 50
 xf = np.array([2., 0.])
 
-# 可控性
+# Controllability
 ctrb = np.hstack([np.linalg.matrix_power(A, i) @ B for i in range(2)])
-print("rank ctrb =", np.linalg.matrix_rank(ctrb))  # 期望为 2
+print("rank ctrb =", np.linalg.matrix_rank(ctrb))  # Expected to be 2
 
-# 最小范数开环序列（C u = xf -> 最小范数解）
+# Minimum norm open-loop sequence (C u = xf -> minimum norm solution)
 C = np.hstack([np.linalg.matrix_power(A, N-1-i) @ B for i in range(N)])
 gram = C @ C.T
 u_seq = (C.T @ np.linalg.pinv(gram) @ xf).reshape(N, 1)  # u0...u49
@@ -55,17 +55,17 @@ def simulate_open(A, B, u_seq, x0):
     return np.array(xs), np.array(u_seq).flatten()
 
 x_open, u_open = simulate_open(A, B, u_seq, x0)
-print("终态 x50 =", x_open[-1])
+print("Final state x50 =", x_open[-1])
 ```
 
 ---
 
-## 2b) 闭环极点配置（极点 0.5, 0.5）
+## 2b) Closed-Loop Pole Placement (Poles 0.5, 0.5)
 ```python
 K_place = place_poles(A, B, [0.5, 0.5]).gain_matrix  # 1x2
 print("K (place) =", K_place)
 
-xd = np.array([3., 0.])  # 期望悬停高度
+xd = np.array([3., 0.])  # Desired hover height
 
 def simulate_cl(A, B, K, x0, xd, steps=50):
     xs, us = [x0], []
@@ -76,32 +76,32 @@ def simulate_cl(A, B, K, x0, xd, steps=50):
     return np.array(xs), np.array(us)
 
 x_cl, u_cl = simulate_cl(A, B, K_place, x0, xd)
-print("闭环首几步 x:", x_cl[:5])
+print("Closed-loop first few states x:", x_cl[:5])
 ```
 
 ---
 
-## 2c) 开环 vs 闭环仿真对比（无噪声）
+## 2c) Open-Loop vs Closed-Loop Simulation Comparison (No Noise)
 ```python
 t = np.arange(N+1)
 plt.figure(figsize=(10,4))
 plt.subplot(1,2,1)
-plt.plot(t, x_open[:,0], label="开环高度")
-plt.plot(t, x_cl[:N+1,0], label="闭环高度")
-plt.axhline(xd[0], ls='--', c='k', label='期望高度')
-plt.legend(); plt.grid(); plt.title("高度对比")
+plt.plot(t, x_open[:,0], label="Open-loop Height")
+plt.plot(t, x_cl[:N+1,0], label="Closed-loop Height")
+plt.axhline(xd[0], ls='--', c='k', label='Desired Height')
+plt.legend(); plt.grid(); plt.title("Height Comparison")
 
 plt.subplot(1,2,2)
-plt.plot(np.arange(N), u_open, label="开环u")
-plt.plot(np.arange(N), u_cl[:N], label="闭环u")
-plt.legend(); plt.grid(); plt.title("控制输入对比")
+plt.plot(np.arange(N), u_open, label="Open-loop u")
+plt.plot(np.arange(N), u_cl[:N], label="Closed-loop u")
+plt.legend(); plt.grid(); plt.title("Control Input Comparison")
 plt.tight_layout()
 plt.show()
 ```
 
 ---
 
-## 2d) 有噪声（速度方程加 \(0.02\,w_k\)）鲁棒性对比
+## 2d) Robustness Comparison with Noise (Velocity Equation Adds \(0.02\,w_k\))
 ```python
 def simulate_noise(A, B, K=None, u_seq=None, x_ref=None, steps=50, seed=0):
     rng = np.random.default_rng(seed)
@@ -123,16 +123,16 @@ x_open_n, _ = simulate_noise(A, B, u_seq=u_open, steps=N, seed=42)
 x_cl_n,   _ = simulate_noise(A, B, K=K_place, x_ref=xd, steps=N, seed=42)
 
 t = np.arange(N+1)
-plt.plot(t, x_open_n[:,0], label="开环高度(噪声)")
-plt.plot(t, x_cl_n[:,0],   label="闭环高度(噪声)")
+plt.plot(t, x_open_n[:,0], label="Open-loop Height (Noise)")
+plt.plot(t, x_cl_n[:,0],   label="Closed-loop Height (Noise)")
 plt.axhline(xd[0], ls='--', c='k')
-plt.legend(); plt.grid(); plt.title("噪声下高度对比")
+plt.legend(); plt.grid(); plt.title("Height Comparison Under Noise")
 plt.show()
 ```
 
 ---
 
-## 3) LQR（无限时域）三组 \(Q,R\)
+## 3) LQR (Infinite Horizon) Three Cases of \(Q,R\)
 ```python
 def dlqr(A, B, Q, R):
     P = solve_discrete_are(A, B, Q, R)
@@ -155,18 +155,17 @@ for name, Q, R in lqr_cases:
 t = np.arange(N+1)
 fig, axes = plt.subplots(1,2, figsize=(10,4))
 for name, x_lqr, u_lqr, _ in results:
-    axes[0].plot(t, x_lqr[:,0], label=f"{name} 高度")
+    axes[0].plot(t, x_lqr[:,0], label=f"{name} Height")
     axes[1].plot(np.arange(N), u_lqr, label=f"{name} u")
 axes[0].axhline(2, ls='--', c='k')
-axes[0].set_title("LQR 高度"); axes[0].grid(); axes[0].legend()
-axes[1].set_title("LQR 控制输入"); axes[1].grid(); axes[1].legend()
+axes[0].set_title("LQR Height"); axes[0].grid(); axes[0].legend()
+axes[1].set_title("LQR Control Input"); axes[1].grid(); axes[1].legend()
 plt.tight_layout(); plt.show()
 ```
 
 ---
 
-## 快速运行顺序
-1. 运行“公共代码”。  
-2. 依次执行 1)、2a)、2b)、2c)、2d)、3)。  
-3. 生成的图即可直接用于报告，打印的 K 与终态用于填答数值。
-
+## Quick Run Order
+1. Run "Common Code".  
+2. Execute 1), 2a), 2b), 2c), 2d), 3) in sequence.  
+3. Generated plots can be directly used in reports, printed K values and final states can be used to fill in numerical answers.
