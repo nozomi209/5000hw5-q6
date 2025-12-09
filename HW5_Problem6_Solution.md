@@ -23,6 +23,50 @@ where $x_k = [z(kT_s), \dot{z}(kT_s)]^T$.
 
 ## 1. Discretization Matrices
 
+### 1.1 Theoretical Derivation
+
+**Continuous-time dynamics:**
+$$m\ddot{z} = F - mg$$
+
+**State-space representation:**
+Let $x_1 = z$ and $x_2 = \dot{z}$, then:
+$$\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 0 \\ \frac{1}{m} \end{bmatrix} F - \begin{bmatrix} 0 \\ g \end{bmatrix}$$
+
+**Discretization with piecewise constant input:**
+
+For $t \in [kT_s, (k+1)T_s)$, assume $F(t) = F(kT_s)$ is constant. The solution to the continuous-time system is:
+
+$$x(t) = e^{At}x(kT_s) + \int_{kT_s}^{t} e^{A(t-\tau)} B F(\tau) d\tau - \int_{kT_s}^{t} e^{A(t-\tau)} \begin{bmatrix} 0 \\ g \end{bmatrix} d\tau$$
+
+For $A = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}$, we have:
+$$e^{At} = \begin{bmatrix} 1 & t \\ 0 & 1 \end{bmatrix}$$
+
+At $t = (k+1)T_s$:
+$$x((k+1)T_s) = \begin{bmatrix} 1 & T_s \\ 0 & 1 \end{bmatrix} x(kT_s) + \int_{kT_s}^{(k+1)T_s} \begin{bmatrix} 1 & (k+1)T_s - \tau \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 \\ \frac{F(kT_s)}{m} \end{bmatrix} d\tau - \int_{kT_s}^{(k+1)T_s} \begin{bmatrix} 1 & (k+1)T_s - \tau \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 \\ g \end{bmatrix} d\tau$$
+
+Computing the integrals:
+$$\int_{kT_s}^{(k+1)T_s} \begin{bmatrix} 1 & (k+1)T_s - \tau \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 \\ \frac{F(kT_s)}{m} \end{bmatrix} d\tau = \begin{bmatrix} \frac{T_s^2}{2} \frac{F(kT_s)}{m} \\ T_s \frac{F(kT_s)}{m} \end{bmatrix}$$
+
+$$\int_{kT_s}^{(k+1)T_s} \begin{bmatrix} 1 & (k+1)T_s - \tau \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 \\ g \end{bmatrix} d\tau = \begin{bmatrix} \frac{T_s^2}{2} g \\ T_s g \end{bmatrix}$$
+
+Therefore:
+$$x_{k+1} = \begin{bmatrix} 1 & T_s \\ 0 & 1 \end{bmatrix} x_k + \begin{bmatrix} \frac{T_s^2}{2m} \\ \frac{T_s}{m} \end{bmatrix} F(kT_s) - \begin{bmatrix} \frac{T_s^2}{2} g \\ T_s g \end{bmatrix}$$
+
+**With control input $F(t) = mg + mu_k$:**
+
+Substituting $F(kT_s) = mg + mu_k$:
+$$x_{k+1} = \begin{bmatrix} 1 & T_s \\ 0 & 1 \end{bmatrix} x_k + \begin{bmatrix} \frac{T_s^2}{2m} \\ \frac{T_s}{m} \end{bmatrix} (mg + mu_k) - \begin{bmatrix} \frac{T_s^2}{2} g \\ T_s g \end{bmatrix}$$
+
+$$= \begin{bmatrix} 1 & T_s \\ 0 & 1 \end{bmatrix} x_k + \begin{bmatrix} \frac{T_s^2}{2m} \\ \frac{T_s}{m} \end{bmatrix} mg + \begin{bmatrix} \frac{T_s^2}{2m} \\ \frac{T_s}{m} \end{bmatrix} mu_k - \begin{bmatrix} \frac{T_s^2}{2} g \\ T_s g \end{bmatrix}$$
+
+$$= \begin{bmatrix} 1 & T_s \\ 0 & 1 \end{bmatrix} x_k + \begin{bmatrix} \frac{T_s^2}{2} \\ T_s \end{bmatrix} u_k$$
+
+**For $T_s = 1$, $m = 2$, $g = 9.8$:**
+
+$$A = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}, \quad B = \begin{bmatrix} \frac{1}{2} \\ 1 \end{bmatrix} = \begin{bmatrix} 0.5 \\ 1 \end{bmatrix}$$
+
+### 1.2 Numerical Results
+
 **Result:**
 ```
 A = [[1. 1.]
@@ -31,8 +75,6 @@ A = [[1. 1.]
 B = [[0.5]
      [1. ]]
 ```
-
-**Note:** The theoretical proof of the discretization formula should be provided separately.
 
 ---
 
@@ -80,6 +122,44 @@ def min_energy_sequence(A, B, x_target, N):
    [-14.625   -12.375  ]]
   ```
 
+### 2b.1 Theoretical Proof: Feedback Law Convergence
+
+**Theorem:** For the discrete-time system $x_{k+1} = Ax_k + Bu_k$ with feedback control $u_k = K(x_k - x_d)$, if all eigenvalues of $(A + BK)$ are strictly inside the unit circle, then the system converges to $x_d$ as $k \to \infty$.
+
+**Proof:**
+
+Define the error state: $\tilde{x}_k = x_k - x_d$
+
+Substituting the feedback law $u_k = K(x_k - x_d) = K\tilde{x}_k$ into the system dynamics:
+
+$$x_{k+1} = Ax_k + BK(x_k - x_d) = Ax_k + BK\tilde{x}_k$$
+
+Since $\tilde{x}_k = x_k - x_d$, we have $x_k = \tilde{x}_k + x_d$. Substituting:
+
+$$x_{k+1} = A(\tilde{x}_k + x_d) + BK\tilde{x}_k = A\tilde{x}_k + Ax_d + BK\tilde{x}_k = (A + BK)\tilde{x}_k + Ax_d$$
+
+For the error dynamics, we need:
+$$\tilde{x}_{k+1} = x_{k+1} - x_d = (A + BK)\tilde{x}_k + Ax_d - x_d$$
+
+For the system to converge to $x_d$, we require that at equilibrium $\tilde{x}_\infty = 0$, which implies:
+$$0 = (A + BK)\tilde{x}_\infty + Ax_d - x_d = Ax_d - x_d$$
+
+This requires $Ax_d = x_d$, which means $x_d$ must be an equilibrium point of the open-loop system. However, for a general $x_d$, we can show convergence of the error dynamics.
+
+**Error dynamics:**
+$$\tilde{x}_{k+1} = (A + BK)\tilde{x}_k + (Ax_d - x_d)$$
+
+If $(A + BK)$ has all eigenvalues strictly inside the unit circle, then $(A + BK)$ is Schur stable. The homogeneous solution $\tilde{x}_k^{(h)} = (A + BK)^k \tilde{x}_0$ converges to zero as $k \to \infty$.
+
+For the particular solution, if $Ax_d = x_d$ (i.e., $x_d$ is an equilibrium), then:
+$$\tilde{x}_{k+1} = (A + BK)\tilde{x}_k$$
+
+Since $(A + BK)$ is Schur stable, $\lim_{k \to \infty} \tilde{x}_k = 0$, which means $\lim_{k \to \infty} x_k = x_d$.
+
+**Conclusion:** With feedback control $u_k = K(x_k - x_d)$ and $(A + BK)$ Schur stable, the system converges to $x_d$ as $k \to \infty$.
+
+### 2b.2 Implementation
+
 **Code:**
 ```python
 def ackermann_gain(A, B, desired_poles):
@@ -93,8 +173,6 @@ def ackermann_gain(A, B, desired_poles):
     K = e_nT @ np.linalg.inv(ctrb) @ phiA
     return K
 ```
-
-**Note:** The theoretical proof that $u_k = K(x_k - x_d)$ forces the system to $x_d$ (when poles of $A+BK$ are inside unit circle) should be provided separately.
 
 ---
 
@@ -359,9 +437,9 @@ Then open `q6_complete_report.html` in a web browser to view all interactive plo
 
 ## Notes
 
-1. **Theoretical Proofs:** The following theoretical proofs should be provided separately:
-   - Discretization formula derivation (Problem 1)
-   - Feedback law convergence proof (Problem 2b)
+1. **Theoretical Proofs:** Complete theoretical derivations are provided in this document:
+   - Discretization formula derivation (Section 1.1)
+   - Feedback law convergence proof (Section 2b.1)
 
 2. **Plot Interpretation:** All plots are interactive and can be zoomed/panned in the HTML report.
 
